@@ -18,7 +18,7 @@ typedef pair<int, int> PII;
 typedef pair<PII, int> PIII;
 typedef pair<PII, PII> PIIII;
 typedef pair<double, int> PDI;
-const int N = 1e5 + 10, M = N * 10;
+const int N = 2e5 + 10, M = N * 10;
 int a[N];
 int n;
 int e[M], ne[M], h[M], idx;
@@ -49,7 +49,7 @@ int dijkstra(){
         q.pop();
         int ver = t.second;
         if(st[ver])
-            continue;
+            continue; 
         st[ver] = 1;
         for (int i = h[ver]; ~i;i=ne[i]){
             int j = e[i];
@@ -72,8 +72,10 @@ int main(){
         cin >> a[i];
         p[i] = {a[i], i};
     }
-    for (int i = 1; i < n;i++)
+    for (int i = 1; i < n;i++){
         add(i, i + 1);
+        add(i + 1, i);
+    }
     sort(p + 1, p + n + 1, cmp);
     for (int i = 1; i < n;i++){
         if(p[i].a==p[i+1].a)
