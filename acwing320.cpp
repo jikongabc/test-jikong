@@ -14,10 +14,10 @@ using namespace std;
 using LL = long long;
 using ULL = unsigned long long;
 typedef pair<int, int> PII;
-const int N = 305;
-int s[N];
-int dp[N][N];
+const int N = 205;
 int n;
+int w[N];
+int dp[N][N];
 
 int main()
 {
@@ -26,18 +26,22 @@ int main()
     cout.tie(0);
     cin >> n;
     for (int i = 1; i <= n;i++){
-        cin >> s[i];
-        s[i] += s[i - 1];
+        cin >> w[i];
+        w[n + i] = w[i];
     }
-    for (int len = 2; len <= n;len++){
-        for (int i = 1; i + len - 1 <= n;i++){
+    for (int len = 3; len <= n+1;len++){
+        for (int i = 1; i + len - 1 <= n * 2; i++)
+        {
             int j = i + len - 1;
-            dp[i][j] = inf;
-            for (int k = i; k < j;k++){
-                dp[i][j] = min(dp[i][j], dp[i][k] + dp[k + 1][j] + s[j] - s[i - 1]);
+            for (int k = i + 1; k < j;k++){
+                dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + w[i] * w[k] * w[j]);
             }
         }
     }
-    cout << dp[1][n];
+    int res = 0;
+    for (int i = 1; i <= n;i++){
+        res = max(res, dp[i][i + n]);
+    }
+    cout << res;
     return 0;
 }
