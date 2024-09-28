@@ -17,48 +17,107 @@ using LL = long long;
 using ULL = unsigned long long;
 typedef pair<int, int> PII;
 typedef pair<int, PII> PIII;
-const int N = 105;
-const int dx[] = {-1, -1, 1, 1, 2, 2, -2, -2}, dy[] = {2, -2, 2, -2, 1, -1, 1, -1};
-int n, m, t;
+const int N = 52, M = N * N;
+int n = 52; // A~Z --> 0~25  a~z--> 26 ~ 51
+int m;
+int d[N];
+int ans[M], cnt;
 int g[N][N];
-PII match[N][N];
-bool st[N][N];
-int res;
+int fa[N];
 
-bool dfs(int x,int y){
-    for (int i = 0; i < 8;i++){
-        int a = x + dx[i], b = y + dy[i];
-        if(a<=0 || b<=0 || a>n || b>m)
-            continue;
-        if(st[a][b] || g[a][b])
-            continue;
-        st[a][b] = 1;
-        PII t = match[a][b];
-        if(!t.first || dfs(t.first,t.second))
-            return true;
-    }
-    return false;
+int find(int x)
+{
+    if (fa[x] != x)
+        fa[x] = find(fa[x]);
+    return fa[x];
 }
 
-int main(){
+void dfs(int u)
+{
+    for (int i = 0; i < n; i++)
+    {
+        if (g[u][i])
+        {
+            g[u][i] = g[i][u] = 0;
+            dfs(i);
+        }
+    }
+    ans[++cnt] = u;
+}
+
+int main()
+{
     ios::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
-    cin >> n >> m >> t;
-    for(int i=0;i<t;i++){
+    cin >> m;
+    for (int i = 0; i < n; i++)
+        fa[i] = i;
+    for (int i = 0; i < m; i++)
+    {
+        char ch1, ch2;
+        string s;
+        cin >> s;
+        ch1 = s[0], ch2 = s[1];
         int a, b;
-        cin >> a >> b;
-        g[a][b] = true;
+        if (ch1 >= 'a' && ch1 <= 'z')
+            a = ch1 - 'a' + 26;
+        else
+            a = ch1 - 'A';
+        if (ch2 >= 'a' && ch2 <= 'z')
+            b = ch2 - 'a' + 26;
+        else
+            b = ch2 - 'A';
+        d[a]++, d[b]++;
+        g[a][b] = g[b][a] = 1;
+        int pa = find(a), pb = find(b);
+        fa[pa] = pb;
     }
-    for (int i = 1; i <= n;i++){
-        for (int j = 1; j <= m;j++){
-            if(g[i][j] || (i+j)%2)
-                continue;
-            memset(st, false, sizeof st);
-            if(dfs(i,j))
-                res++;
+    int cnt1 = 0;
+    int cnt2 = 0;
+    int start = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (fa[i] == i && d[i])
+            cnt2++;
+    }
+    if (cnt2 != 1)
+    {
+        cout << "No Solution";
+        return 0;
+    }
+    for (int i = 0; i < n; i++)
+    {
+        if (d[i] & 1)
+        {
+            cnt1++;
+            if (start == 0)
+                start = i;
         }
     }
-    cout << n * m - t - res;
+    if (cnt1 && cnt1 != 2)
+    {
+        cout << "No Solution";
+        return 0;
+    }
+    if (start == 0)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (d[i])
+            {
+                start = i;
+                break;
+            }
+        }
+    }
+    dfs(start);
+    for (int i = cnt; i; i--)
+    {
+        if (ans[i] <= 25)
+            cout << (char)('A' + ans[i]);
+        else
+            cout << (char)('a' + ans[i] - 26);
+    }
     return 0;
 }
